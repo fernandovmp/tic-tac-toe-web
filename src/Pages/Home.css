@@ -1,0 +1,31 @@
+.page-container {
+    height: 100%;
+    position: relative;
+    padding-top: 75px;
+}
+
+.page-header {
+    background-color: #38B3F0;
+    height: 75px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+}
+
+.menu-icon {
+    padding: 10px 30px;
+}
+
+.menu-icon div {
+    height: 10px;
+    width: 65px;
+    background-color: #fff;
+    margin: 6px 0;
+}
+
+.menu {
+    background-color: #ddd;
+    width: 425px;
+    height: 100%;
+    text-align: center;
+}
