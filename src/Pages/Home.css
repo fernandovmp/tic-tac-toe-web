@@ -29,3 +29,41 @@
     height: 100%;
     text-align: center;
 }
+
+.menu input {
+    border: 0 solid #333;
+    border-radius: 4px;
+    margin-top: 100px;
+    height: 30px;
+    width: 300px;
+    padding-left: 7px;
+}
+
+.search-result-container {
+    padding-left: 65px;
+}
+
+.search-result-item {
+    font-family: Arial, Helvetica, sans-serif;
+    padding-top: 10px;
+    max-width: 300px;
+    height: 30px;
+    margin: 5px 0;
+    font-size: 18px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #ccc;
+    padding: 5px;
+}
+
+.search-result-item:first-child {
+    border-top: 0;
+}
+
+.search-result-item img {
+    height: 30px;
+    width: 30px;
+    margin-left: 15px; 
+}
