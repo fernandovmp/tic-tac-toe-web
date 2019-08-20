@@ -10,6 +10,7 @@
     width: 100%;
     position: absolute;
     top: 0;
+    display: flex;
 }
 
 .menu-icon {
@@ -66,4 +67,54 @@
     height: 30px;
     width: 30px;
     margin-left: 15px; 
+}
+
+.notification-icon {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    margin-right: 100px;
+    align-items: center;
+    overflow: hidden;
+}
+
+.notification-icon button {
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: none;
+    outline: none;
+}
+
+.notification-icon button img {
+    width: 50px;
+    height: 50px;
+}
+
+.notification-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 320px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    margin-top: 60px;
+}
+
+.notification-content * {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  height: 60px;
+}
+
+.notification-content *:hover {
+    background-color: #ddd;
+}
+
+.notification-icon:hover .notification-content {
+  display: block;
 }

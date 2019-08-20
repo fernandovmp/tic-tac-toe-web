@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './Home.css';
 import api from '../services/api';
 import InviteIcon from '../assets/account-plus.svg'
-export default function Home() {
+import NotificationIcon from '../assets/bell-outline.svg';
+
+export default function Home({ history }) {
     
     const [searchUsername, setSearchUsername] = useState('');
     const [menuOpened, setMenuOpened] = useState(false);
     const [users, setUsers] = useState([]);
     const [searchResult, setSearchResult] = useState([]);
+    const [invites, setInvites] = useState([]);
     
     async function GetRegisteredUser() {
         const response = await api.get('/users');
@@ -17,6 +20,15 @@ export default function Home() {
     useEffect(() => {
         GetRegisteredUser();
     }, []);
+    
+    async function GetInvites() {
+        const response = await api.get('/invites');
+        setInvites(response.data);
+    }
+    useEffect(() => {
+        GetInvites();
+    }, []);
+    
     useEffect(handleUserSearch, [searchUsername]);
     
     function handleMenuClick() {
@@ -32,7 +44,7 @@ export default function Home() {
     }
     
     async function handleInvite(targetId) {
-        console.log(targetId);
+        const response = await api.post(`/users/${targetId}/invites`);
     }
     
     return (
@@ -43,6 +55,18 @@ export default function Home() {
                     <div></div>
                     <div></div>
                     <div></div>
+                </div>
+                <div className="notification-icon" >
+                    <button>
+                        <img src={NotificationIcon} alt=""/>
+                    </button>
+                    <diV className="notification-content">
+                        { invites.map( invite => (
+                            <div>
+                                <p>{invite.sender.username} convidou você para uma partida!</p>
+                            </div>
+                        ))}
+                    </diV>
                 </div>
             </header>
             { menuOpened ? <div className="menu">
