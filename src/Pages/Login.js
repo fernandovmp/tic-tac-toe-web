@@ -34,7 +34,9 @@ export default function Login({ history }) {
             if(response.status === 401) {
                 throw new Error('bad credentials');
             }
-            cookies.set('access-token', response.headers['set-cookie']);
+            cookies.set('access-token', response.headers['set-cookie'], {
+                secure: true,
+            });
             history.push('/');
         } catch (error) {
             
