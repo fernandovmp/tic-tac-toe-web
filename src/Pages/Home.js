@@ -4,6 +4,7 @@ import './Home.css';
 import api from '../services/api';
 import InviteIcon from '../assets/account-plus.svg'
 import NotificationIcon from '../assets/bell-outline.svg';
+import AcceptInvite from '../assets/email.svg';
 
 export default function Home({ history }) {
     
@@ -69,13 +70,17 @@ export default function Home({ history }) {
                     <div></div>
                 </div>
                 <div className="notification-icon" >
-                    <button>
+                    <button id="notification-btn">
                         <img src={NotificationIcon} alt=""/>
                     </button>
                     <div className="notification-content">
                         { invites.map( invite => (
-                            <div>
-                                <p>{invite.sender.username} convidou você para uma partida!</p>
+                            <div className="invite-container">
+                                <strong className="invite-header">Você recebeu um convite!</strong>
+                                <div>
+                                    <p>{invite.sender.username} convidou você para uma partida!</p>
+                                    <button><img src={AcceptInvite} alt="Aceitar convite"/></button>
+                                </div>
                             </div>
                         ))}
                     </div>

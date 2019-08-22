@@ -78,7 +78,7 @@
     overflow: hidden;
 }
 
-.notification-icon button {
+.notification-icon #notification-btn {
     width: 50px;
     height: 50px;
     border: none;
@@ -86,7 +86,7 @@
     outline: none;
 }
 
-.notification-icon button img {
+.notification-icon #notification-btn img {
     width: 50px;
     height: 50px;
 }
@@ -95,26 +95,62 @@
     display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 320px;
+    max-width: 320px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
     margin-top: 60px;
 }
 
-.notification-content * {
+.notification-content .invite-container {
   float: none;
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
   text-align: left;
-  height: 60px;
+  height: 75px;
 }
 
-.notification-content *:hover {
+.notification-content .invite-container:hover {
     background-color: #ddd;
 }
 
 .notification-icon:hover .notification-content {
   display: block;
+}
+
+.invite-container {
+    display: flex;
+}
+
+.invite-container * {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.invite-container strong {
+    color: #ffc400;
+    text-decoration: underline solid #ffc400;
+}
+
+.invite-container div {
+    display: flex;
+    flex-direction: row;
+}
+
+.invite-container p {
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.invite-container div img {
+    width: 50px;
+    height: 50px;
+}
+
+.invite-container div button {
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: none;
+    outline: none;
 }
