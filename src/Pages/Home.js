@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 import './Home.css';
 import api from '../services/api';
 import InviteIcon from '../assets/account-plus.svg'
@@ -11,19 +12,30 @@ export default function Home({ history }) {
     const [users, setUsers] = useState([]);
     const [searchResult, setSearchResult] = useState([]);
     const [invites, setInvites] = useState([]);
+    const [auth, setAuth] = useState(true);
     
     async function GetRegisteredUser() {
-        const response = await api.get('/users');
-        setUsers(response.data);
+        try {
+            const response = await api.get('/users');
+            setUsers(response.data);
+        } catch (error) {
+            setAuth(false);
+        }
     }
     
     useEffect(() => {
-        GetRegisteredUser();
-    }, []);
+        if(auth)
+            GetRegisteredUser();
+    }, [auth]);
     
     async function GetInvites() {
-        const response = await api.get('/invites');
-        setInvites(response.data);
+        try {
+            const response = await api.get('/invites');
+            setInvites(response.data);
+        } catch (error) {
+            //setAuth(false);
+        }
+        
     }
     useEffect(() => {
         GetInvites();
@@ -48,8 +60,8 @@ export default function Home({ history }) {
     }
     
     return (
-        
         <div className="page-container">
+            {!auth && <Redirect to="/login" /> }
             <header className="page-header">
                 <div className="menu-icon" onClick={handleMenuClick}>
                     <div></div>
@@ -60,13 +72,13 @@ export default function Home({ history }) {
                     <button>
                         <img src={NotificationIcon} alt=""/>
                     </button>
-                    <diV className="notification-content">
+                    <div className="notification-content">
                         { invites.map( invite => (
                             <div>
                                 <p>{invite.sender.username} convidou você para uma partida!</p>
                             </div>
                         ))}
-                    </diV>
+                    </div>
                 </div>
             </header>
             { menuOpened ? <div className="menu">
