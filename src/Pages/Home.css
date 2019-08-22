@@ -115,8 +115,12 @@
     background-color: #ddd;
 }
 
-.notification-icon:hover .notification-content {
+.notification-icon #notification-btn:hover + .notification-content {
   display: block;
+}
+
+.notification-content:hover {
+    display: block;
 }
 
 .invite-container {
