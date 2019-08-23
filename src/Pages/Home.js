@@ -94,7 +94,7 @@ export default function Home({ history }) {
                         <img src={NotificationIcon} alt=""/>
                     </button>
                     <div className="notification-content">
-                        { invites.map( invite => (
+                        { invites.reverse().map( invite => (
                             <div className="invite-container">
                                 <strong className="invite-header">Você recebeu um convite!</strong>
                                 <div>
