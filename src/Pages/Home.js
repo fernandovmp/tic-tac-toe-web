@@ -5,6 +5,7 @@ import api from '../services/api';
 import InviteIcon from '../assets/account-plus.svg'
 import NotificationIcon from '../assets/bell-outline.svg';
 import AcceptInvite from '../assets/email.svg';
+import io from 'socket.io-client';
 
 export default function Home({ history }) {
     
@@ -20,6 +21,12 @@ export default function Home({ history }) {
         try {
             const response = await api.get('/login/user');
             setLoggedUser(response.data);
+            const socket = io('http://localhost:3001', {
+                query: {
+                    user: response.data._id
+                }
+            });
+            socket.on('invite', () => GetInvites());
         } catch (error) {
             setAuth(false);
         }
