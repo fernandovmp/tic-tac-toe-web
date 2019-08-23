@@ -65,7 +65,8 @@ export default function Home({ history }) {
             setSearchResult([]);
             return;
         }
-        setSearchResult(users.filter(user => user.username.includes(searchUsername.trim())));
+        setSearchResult(users.filter(
+            user => user.username.includes(searchUsername.trim()) && user._id !== loggedUser._id));
     }
     
     async function handleInvite(targetId) {
