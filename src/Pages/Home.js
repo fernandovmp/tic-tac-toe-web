@@ -8,12 +8,22 @@ import AcceptInvite from '../assets/email.svg';
 
 export default function Home({ history }) {
     
+    const [loggedUser, setLoggedUser] = useState({});
     const [searchUsername, setSearchUsername] = useState('');
     const [menuOpened, setMenuOpened] = useState(false);
     const [users, setUsers] = useState([]);
     const [searchResult, setSearchResult] = useState([]);
     const [invites, setInvites] = useState([]);
     const [auth, setAuth] = useState(true);
+    
+    async function getLoggedUser() {
+        try {
+            const response = await api.get('/login/user');
+            setLoggedUser(response.data);
+        } catch (error) {
+            setAuth(false);
+        }
+    }
     
     async function GetRegisteredUser() {
         try {
@@ -24,11 +34,6 @@ export default function Home({ history }) {
         }
     }
     
-    useEffect(() => {
-        if(auth)
-            GetRegisteredUser();
-    }, [auth]);
-    
     async function GetInvites() {
         try {
             const response = await api.get('/invites');
@@ -38,9 +43,16 @@ export default function Home({ history }) {
         }
         
     }
-    useEffect(() => {
-        GetInvites();
-    }, []);
+    
+    async function isAuthorized() {
+        await getLoggedUser();
+        if(auth) {
+            GetRegisteredUser();
+            GetInvites();
+        }
+    }
+    
+    useEffect(() => isAuthorized(), []);
     
     useEffect(handleUserSearch, [searchUsername]);
     
