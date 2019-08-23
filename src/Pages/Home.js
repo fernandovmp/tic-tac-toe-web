@@ -60,7 +60,7 @@ export default function Home({ history }) {
         }
     }
     
-    useEffect(() => isAuthorized(), []);
+    useEffect(() => { isAuthorized(); }, []);
     
     useEffect(handleUserSearch, [searchUsername]);
     
