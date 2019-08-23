@@ -16,6 +16,7 @@ export default function Home({ history }) {
     const [searchResult, setSearchResult] = useState([]);
     const [invites, setInvites] = useState([]);
     const [auth, setAuth] = useState(true);
+    const [notificationCount, setNotificationCount] = useState(0);
     
     async function getLoggedUser() {
         try {
@@ -63,6 +64,16 @@ export default function Home({ history }) {
     
     useEffect(handleUserSearch, [searchUsername]);
     
+    
+    useEffect(() => {
+        let cont = 0;
+        invites.forEach(item => {
+            if (item.new) {
+                cont++;
+            }
+        });
+        setNotificationCount(cont);
+    }, [invites]);
     function handleMenuClick() {
         setMenuOpened(!menuOpened);
     }
@@ -80,6 +91,16 @@ export default function Home({ history }) {
         const response = await api.post(`/users/${targetId}/invites`);
     }
     
+    
+    async function handleCheckNotification() {
+        setNotificationCount(0);
+        invites.forEach(async item => {
+            if(item.new) {
+                await api.patch(`/invites/${item._id}`);
+            }
+        });
+    }
+    
     return (
         <div className="page-container">
             {!auth && <Redirect to="/login" /> }
@@ -90,7 +111,10 @@ export default function Home({ history }) {
                     <div></div>
                 </div>
                 <div className="notification-icon" >
-                    <button id="notification-btn">
+                    {notificationCount > 0 && (<div id="notification-count">
+                        <p>{notificationCount}</p>
+                    </div>)}
+                    <button id="notification-btn" onMouseOver={handleCheckNotification}>
                         <img src={NotificationIcon} alt=""/>
                     </button>
                     <div className="notification-content">
@@ -102,7 +126,7 @@ export default function Home({ history }) {
                                     <button><img src={AcceptInvite} alt="Aceitar convite"/></button>
                                 </div>
                             </div>
-                        ))}
+                            ))}
                     </div>
                 </div>
             </header>
