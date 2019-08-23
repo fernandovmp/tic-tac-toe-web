@@ -119,7 +119,7 @@ export default function Home({ history }) {
                     </button>
                     <div className="notification-content">
                         { invites.reverse().map( invite => (
-                            <div className="invite-container">
+                            <div key={invite._id} className="invite-container">
                                 <strong className="invite-header">Você recebeu um convite!</strong>
                                 <div>
                                     <p>{invite.sender.username} convidou você para uma partida!</p>
