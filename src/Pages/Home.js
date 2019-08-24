@@ -17,6 +17,8 @@ export default function Home({ history }) {
     const [invites, setInvites] = useState([]);
     const [auth, setAuth] = useState(true);
     const [notificationCount, setNotificationCount] = useState(0);
+    const board = ['', '', '', '', '', '', '', '', ''];
+    const symbols = ['X', 'O'];
     
     async function getLoggedUser() {
         try {
@@ -162,6 +164,37 @@ export default function Home({ history }) {
                 </div>
                     
             </div> : null}
+            <div className="game">
+                <div className="board">
+                    <div className="board-cell">
+                        <div>{board[0]}</div>
+                    </div>
+                    <div className="board-cell board-vertical-border">
+                        <div>{board[1]}</div>
+                    </div>
+                    <div className="board-cell">
+                        <div>{board[2]}</div>
+                    </div>
+                    <div className="board-cell board-horizontal-border">
+                        <div>{board[3]}</div>
+                    </div>
+                    <div className="board-cell board-vertical-border board-horizontal-border">
+                        <div>{board[4]}</div>
+                    </div>
+                    <div className="board-cell board-horizontal-border">
+                        <div>{board[5]}</div>
+                    </div>
+                    <div className="board-cell">
+                        <div>{board[6]}</div>
+                    </div>
+                    <div className="board-cell board-vertical-border">
+                        <div>{board[7]}</div>
+                    </div>
+                    <div className="board-cell">
+                        <div>{board[8]}</div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

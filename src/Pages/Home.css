@@ -190,3 +190,40 @@
     padding: 15px;
     font-family: Arial, Helvetica, sans-serif;
 }
+
+.board {
+    width: 300px;
+    height: 300px;
+    margin: 125px auto;
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+}
+
+.board-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.board-cell div {
+    background: #c8c8c8;
+    border-radius: 4px;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 44px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+.board-vertical-border {
+    border-left: 5px solid #000;
+    border-right: 5px solid #000;
+}
+
+.board-horizontal-border {
+    border-top: 5px solid #000;
+    border-bottom: 5px solid #000;
+}
