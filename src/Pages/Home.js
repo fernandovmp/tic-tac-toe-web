@@ -131,6 +131,20 @@ export default function Home({ history }) {
                 </div>
             </header>
             { menuOpened ? <div className="menu">
+                <div className="user-statistics-container">
+                    <div className="user-statistics-content">
+                        <h1>{loggedUser.wonMatches}</h1>
+                        <p>Vitórias</p>
+                    </div>
+                    <div className="user-statistics-content">
+                        <h1>{loggedUser.tiedMatches}</h1>
+                        <p>Empates</p>
+                    </div>
+                    <div className="user-statistics-content">
+                        <h1>{loggedUser.lostMatches}</h1>
+                        <p>Derrotas</p>
+                    </div>
+                </div>
                 <input placeholder="Usuário" value={searchUsername} onChange={e => setSearchUsername(e.target.value)}/>
                 <div className="search-result-container">
                     {searchResult.length > 0 ?
