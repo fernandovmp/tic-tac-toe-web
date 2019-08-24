@@ -24,11 +24,20 @@
     margin: 6px 0;
 }
 
+#page-content {
+    display: flex;
+    height: 100%;
+}
+
 .menu {
     background-color: #ddd;
     width: 425px;
     height: 100%;
     text-align: center;
+}
+
+.menu-hidden {
+    display: none;
 }
 
 .menu input {
@@ -226,4 +235,11 @@
 .board-horizontal-border {
     border-top: 5px solid #000;
     border-bottom: 5px solid #000;
+}
+
+.game {
+    flex: 0 1 auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }

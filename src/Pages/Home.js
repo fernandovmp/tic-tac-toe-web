@@ -132,69 +132,72 @@ export default function Home({ history }) {
                     </div>
                 </div>
             </header>
-            { menuOpened ? <div className="menu">
-                <div className="user-statistics-container">
-                    <div className="user-statistics-content">
-                        <h1>{loggedUser.wonMatches}</h1>
-                        <p>Vitórias</p>
+            <div id="page-content">
+                <div className={`menu ${menuOpened ? '' : 'menu-hidden'}`}>
+                    <div className="user-statistics-container">
+                        <div className="user-statistics-content">
+                            <h1>{loggedUser.wonMatches}</h1>
+                            <p>Vitórias</p>
+                        </div>
+                        <div className="user-statistics-content">
+                            <h1>{loggedUser.tiedMatches}</h1>
+                            <p>Empates</p>
+                        </div>
+                        <div className="user-statistics-content">
+                            <h1>{loggedUser.lostMatches}</h1>
+                            <p>Derrotas</p>
+                        </div>
                     </div>
-                    <div className="user-statistics-content">
-                        <h1>{loggedUser.tiedMatches}</h1>
-                        <p>Empates</p>
+                    <input placeholder="Usuário" value={searchUsername} onChange={e => setSearchUsername(e.target.value)} />
+                    <div className="search-result-container">
+                        {searchResult.length > 0 ?
+                            (<ul>
+                                {searchResult.map(result => (
+                                    <li key={result._id} className="search-result-item">
+                                        <p>{result.username}</p>
+                                        <img src={InviteIcon} alt="Convidar" onClick={() => {
+                                            handleInvite(result._id);
+                                        }} />
+                                    </li>
+                                ))}
+                            </ul>)
+                            : null}
                     </div>
-                    <div className="user-statistics-content">
-                        <h1>{loggedUser.lostMatches}</h1>
-                        <p>Derrotas</p>
-                    </div>
+
                 </div>
-                <input placeholder="Usuário" value={searchUsername} onChange={e => setSearchUsername(e.target.value)}/>
-                <div className="search-result-container">
-                    {searchResult.length > 0 ?
-                        (<ul>
-                            {searchResult.map(result => (
-                                <li key={result._id} className="search-result-item">
-                                    <p>{result.username}</p>
-                                    <img src={InviteIcon} alt="Convidar" onClick={() => {
-                                        handleInvite(result._id);
-                                    }}/>
-                                </li>
-                            ))}
-                        </ul>)
-                        : null}
-                </div>
-                    
-            </div> : null}
-            <div className="game">
-                <div className="board">
-                    <div className="board-cell">
-                        <div>{board[0]}</div>
-                    </div>
-                    <div className="board-cell board-vertical-border">
-                        <div>{board[1]}</div>
-                    </div>
-                    <div className="board-cell">
-                        <div>{board[2]}</div>
-                    </div>
-                    <div className="board-cell board-horizontal-border">
-                        <div>{board[3]}</div>
-                    </div>
-                    <div className="board-cell board-vertical-border board-horizontal-border">
-                        <div>{board[4]}</div>
-                    </div>
-                    <div className="board-cell board-horizontal-border">
-                        <div>{board[5]}</div>
-                    </div>
-                    <div className="board-cell">
-                        <div>{board[6]}</div>
-                    </div>
-                    <div className="board-cell board-vertical-border">
-                        <div>{board[7]}</div>
-                    </div>
-                    <div className="board-cell">
-                        <div>{board[8]}</div>
+                <div className="game">
+                    <div className="board">
+                        <div className="board-cell">
+                            <div>{board[0]}</div>
+                        </div>
+                        <div className="board-cell board-vertical-border">
+                            <div>{board[1]}</div>
+                        </div>
+                        <div className="board-cell">
+                            <div>{board[2]}</div>
+                        </div>
+                        <div className="board-cell board-horizontal-border">
+                            <div>{board[3]}</div>
+                        </div>
+                        <div className="board-cell board-vertical-border board-horizontal-border">
+                            <div>{board[4]}</div>
+                        </div>
+                        <div className="board-cell board-horizontal-border">
+                            <div>{board[5]}</div>
+                        </div>
+                        <div className="board-cell">
+                            <div>{board[6]}</div>
+                        </div>
+                        <div className="board-cell board-vertical-border">
+                            <div>{board[7]}</div>
+                        </div>
+                        <div className="board-cell">
+                            <div>{board[8]}</div>
+                        </div>
                     </div>
                 </div>
             </div>
+            
         </div>
     );
 };
