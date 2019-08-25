@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Board from './Board';
+import PlayerCard from './PlayerCard';
 import api from '../../services/api';
 import './TicTacToe.css';
 
@@ -151,18 +152,17 @@ class TicTacToe extends Component {
     }
     
     render() {
+        const { currentSymbol } = this.state.gameState;
+        const { user } = this.props;
+        const { opponent } = this.state;
+        const isPlayer1Turn = this.state.gameState.players[currentSymbol] === user._id;
+        const isPlayer2Turn = this.state.gameState.players[currentSymbol] === opponent._id;
         return (
             <div className="game">
                 {this.state.showPlayers && (
                 <div className="game-players">
-                    <div
-                        className={`player ${this.state.gameState.players[this.state.gameState.currentSymbol] === this.props.user._id ? 'player-turn' : ''}`}>
-                        <p>{this.props.user.username}</p>
-                    </div>
-                    <div
-                        className={`player ${this.state.gameState.players[this.state.gameState.currentSymbol] === this.state.opponent._id ? 'player-turn' : ''}`}>
-                        <p>{this.state.opponent.username}</p>
-                    </div>
+                        <PlayerCard activeTurn={isPlayer1Turn} playerInfo={user}/>
+                        <PlayerCard activeTurn={isPlayer2Turn} playerInfo={opponent}/>
                 </div>)}
                 <Board gameState={this.state.gameState} handlePlay={this.handlePlay} />
             </div>
