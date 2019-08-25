@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import './Home.css';
 import api from '../services/api';
@@ -8,84 +8,102 @@ import NotificationBox from '../components/NotificationBox';
 import TicTacToe from '../components/tic-tac-toe/TicTacToe';
 import MatchResult from '../components/tic-tac-toe/MatchResult';
 
-export default function Home({ history }) {
+class Home extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            loggedUser: {
+                
+            },
+            menuOpened: false,
+            users: [],
+            auth: true,
+            socket: null,
+            ticTacToe: null,
+            matchResult: null
+        }
+    }
     
-    const [loggedUser, setLoggedUser] = useState({});
-    const [menuOpened, setMenuOpened] = useState(false);
-    const [users, setUsers] = useState([]);
-    const [auth, setAuth] = useState(true);
-    const [socket, setSocket] = useState(null);
-    const [ticTacToe, setTicTacToe] = useState(null);
-    const [matchResult, setMatchResult] = useState(null);
+    componentDidMount() {
+        this.isAuthorized();
+    }
     
-    async function getLoggedUser() {
+    componentDidUpdate(prevProps, prevState) {
+        if(prevState.loggedUser !== this.state.loggedUser) {
+            const localSocket = io('http://localhost:3001', {
+                query: {
+                    user: this.state.loggedUser._id
+                }
+            });
+            this.setState({ socket: localSocket });
+        }
+    }
+    
+    isAuthorized = async () => {
+        await this.getLoggedUser();
+        if (this.state.auth) {
+            this.getRegisteredUser();
+        }
+    }
+    
+    getLoggedUser = async () => {
         try {
             const response = await api.get('/login/user');
-            setLoggedUser(response.data);
+            this.setState({ loggedUser: response.data });
         } catch (error) {
-            setAuth(false);
+            this.setState({ auth: false });
         }
     }
     
-    async function GetRegisteredUser() {
+    getRegisteredUser = async () => {
         try {
             const response = await api.get('/users');
-            setUsers(response.data);
+            this.setState({ users: response.data });
         } catch (error) {
-            setAuth(false);
+            this.setState({ auth: false });
         }
+        
     }
     
-    async function isAuthorized() {
-        await getLoggedUser();
-        if(auth) {
-            GetRegisteredUser();
-            //GetInvites();
-        }
+    handleMenuClick = () => {
+        this.setState({ menuOpened: !this.state.menuOpened })
     }
     
-    useEffect(() => { isAuthorized(); }, []);
-    
-    useEffect(() => {
-        const localSocket = io('http://localhost:3001', {
-            query: {
-                user: loggedUser._id
-            }
-        });
-        setSocket(localSocket);
-    }, [loggedUser])
-    
-    function handleMenuClick() {
-        setMenuOpened(!menuOpened);
-    }
-    
-    return (
-        <div className="page-container">
-            {!auth && <Redirect to="/login" /> }
-            <header className="page-header">
-                <div className="menu-icon" onClick={handleMenuClick}>
-                    <div></div>
-                    <div></div>
-                    <div></div>
+    render() {
+        return (
+            <div className="page-container">
+                {!this.state.auth && <Redirect to="/login" />}
+                <header className="page-header">
+                    <div className="menu-icon" onClick={this.handleMenuClick}>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <NotificationBox socket={this.state.socket}
+                        startPlay={opponent => this.state.ticTacToe.startPlay(opponent)}
+                    />
+                </header>
+                <div id="page-content">
+                    <UserMenu opened={this.state.menuOpened} user={this.state.loggedUser} 
+                        searchBase={this.state.users} 
+                    />
+                    <TicTacToe user={this.state.loggedUser} socket={this.state.socket} 
+                        onRef={ref => this.setState({ ticTacToe: ref })}
+                        onEndMatch={resultMessage => {
+                            this.state.matchResult.showResult(resultMessage);
+                        }}
+                    />
                 </div>
-                <NotificationBox socket={socket} 
-                    startPlay={ opponent => ticTacToe.startPlay(opponent)}
-                />
-            </header>
-            <div id="page-content">
-                <UserMenu opened={menuOpened} user={loggedUser} searchBase={users}/>
-                <TicTacToe user={loggedUser} socket={socket} onRef={ref => setTicTacToe(ref)}
-                    onEndMatch={resultMessage => {
-                        matchResult.showResult(resultMessage);
+                <MatchResult onRef={ref => this.setState({ matchResult: ref })}
+                    onClose={() => {
+                        this.state.ticTacToe.resetGame();
+                        this.getLoggedUser();
                     }}
                 />
             </div>
-            <MatchResult onRef={ref => setMatchResult(ref)}
-                onClose={() => {
-                   ticTacToe.resetGame();
-                   getLoggedUser(); 
-                }}
-            />
-        </div>
-    );
-};
+        );
+    }
+    
+}
+
+export default Home;
