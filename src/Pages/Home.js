@@ -7,6 +7,7 @@ import NotificationIcon from '../assets/bell-outline.svg';
 import AcceptInvite from '../assets/email.svg';
 import io from 'socket.io-client';
 import UserMenu from '../components/UserMenu';
+import NotificationBox from '../components/NotificationBox';
 
 const board = ['', '', '', '', '', '', '', '', ''];
 const symbols = ['X', 'O'];
@@ -71,21 +72,11 @@ export default function Home({ history }) {
         }
     }
     
-    async function GetInvites() {
-        try {
-            const response = await api.get('/invites');
-            setInvites(response.data);
-        } catch (error) {
-            //setAuth(false);
-        }
-        
-    }
-    
     async function isAuthorized() {
         await getLoggedUser();
         if(auth) {
             GetRegisteredUser();
-            GetInvites();
+            //GetInvites();
         }
     }
     
@@ -97,7 +88,7 @@ export default function Home({ history }) {
                 user: loggedUser._id
             }
         });
-        localSocket.on('invite', () => GetInvites());
+        //localSocket.on('invite', () => GetInvites());
         localSocket.on('startPlay', startState => {
             setGameState(startState);
             setShowPlayers(true);
@@ -112,15 +103,6 @@ export default function Home({ history }) {
         setSocket(localSocket);
     }, [loggedUser])
     
-    useEffect(() => {
-        let cont = 0;
-        invites.forEach(item => {
-            if (item.new) {
-                cont++;
-            }
-        });
-        setNotificationCount(cont);
-    }, [invites]);
     function handleMenuClick() {
         setMenuOpened(!menuOpened);
     }
@@ -129,15 +111,6 @@ export default function Home({ history }) {
         if(!resultContainerOpened)
             setGameState(defaultGameState);
     }, [resultContainerOpened]);
-    
-    async function handleCheckNotification() {
-        setNotificationCount(0);
-        invites.forEach(async item => {
-            if(item.new) {
-                await api.patch(`/invites/${item._id}`);
-            }
-        });
-    }
     
     async function handleMakePlay(newState) {
         setGameState(newState);
@@ -230,27 +203,7 @@ export default function Home({ history }) {
                     <div></div>
                     <div></div>
                 </div>
-                <div className="notification-icon" >
-                    {notificationCount > 0 && (<div id="notification-count">
-                        <p>{notificationCount}</p>
-                    </div>)}
-                    <button id="notification-btn" onMouseOver={handleCheckNotification}>
-                        <img src={NotificationIcon} alt=""/>
-                    </button>
-                    <div className="notification-content">
-                        { invites.reverse().map( invite => (
-                            <div key={invite._id} className="invite-container">
-                                <strong className="invite-header">Você recebeu um convite!</strong>
-                                <div>
-                                    <p>{invite.sender.username} convidou você para uma partida!</p>
-                                    <button onClick={() => startPlay(invite.sender)}>
-                                        <img src={AcceptInvite} alt="Aceitar convite"/>
-                                    </button>
-                                </div>
-                            </div>
-                            ))}
-                    </div>
-                </div>
+                <NotificationBox socket={socket} startPlay={startPlay}/>
             </header>
             <div id="page-content">
                 <UserMenu opened={menuOpened} user={loggedUser} searchBase={users}/>
