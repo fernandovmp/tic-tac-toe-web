@@ -15,8 +15,6 @@ export default function Home({ history }) {
     const [users, setUsers] = useState([]);
     const [auth, setAuth] = useState(true);
     const [socket, setSocket] = useState(null);
-    const [resultContainerOpened, setResultContainerOpened] = useState(false);
-    const [gameResultMessage, setGameResultMessage] = useState('');
     const [ticTacToe, setTicTacToe] = useState(null);
     const [matchResult, setMatchResult] = useState(null);
     
