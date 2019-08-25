@@ -8,35 +8,7 @@ import AcceptInvite from '../assets/email.svg';
 import io from 'socket.io-client';
 import UserMenu from '../components/UserMenu';
 import NotificationBox from '../components/NotificationBox';
-import TicTacToeBoard from '../components/tic-tac-toe/Board';
-
-const board = ['', '', '', '', '', '', '', '', ''];
-const symbols = ['X', 'O'];
-const winningSequences = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
-];
-const defaultGameState = {
-    board,
-    currentSymbol: -1,
-    players: [],
-    matchState: {
-        end: false,
-        result: ''
-    }
-}
-
-const resultMessages = {
-    won: 'Você ganhou!',
-    tied: 'Empate',
-    lost: 'Você perdeu!'
-}
+import TicTacToe from '../components/tic-tac-toe/TicTacToe';
 
 export default function Home({ history }) {
     
@@ -49,11 +21,12 @@ export default function Home({ history }) {
     const [auth, setAuth] = useState(true);
     const [notificationCount, setNotificationCount] = useState(0);
     const [socket, setSocket] = useState(null);
-    const [gameState, setGameState] = useState(defaultGameState);
+    const [gameState, setGameState] = useState({});
     const [resultContainerOpened, setResultContainerOpened] = useState(false);
     const [gameResultMessage, setGameResultMessage] = useState('');
     const [showPlayers, setShowPlayers] = useState(false);
     const [opponentInfo, setOpponentInfo] = useState({});
+    const [ticTacToe, setTicTacToe] = useState(null);
     
     async function getLoggedUser() {
         try {
@@ -89,111 +62,11 @@ export default function Home({ history }) {
                 user: loggedUser._id
             }
         });
-        //localSocket.on('invite', () => GetInvites());
-        localSocket.on('startPlay', startState => {
-            setGameState(startState);
-            setShowPlayers(true);
-            async function getOpponent (opponentId) {
-                const response = await api.get(`/users/${opponentId}`);
-                setOpponentInfo(response.data);
-                console.log(response.data + '\n' + startState.players);
-            }
-            getOpponent(startState.players[1]);
-            localSocket.on('makePlay', handleMakePlay);
-        });
         setSocket(localSocket);
     }, [loggedUser])
     
     function handleMenuClick() {
         setMenuOpened(!menuOpened);
-    }
-    
-    useEffect(() => {
-        if(!resultContainerOpened)
-            setGameState(defaultGameState);
-    }, [resultContainerOpened]);
-    
-    async function handleMakePlay(newState) {
-        setGameState(newState);
-        let resultMessage = '';
-        if (newState.matchState.end) {
-            let requestData = {};
-            if (newState.matchState.result === loggedUser._id) {
-                requestData = {
-                    wonMatches: loggedUser.wonMatches + 1
-                };
-                resultMessage = resultMessages.won;
-            }
-            else if (newState.matchState.result === 'tied') {
-                requestData = {
-                    tiedMatches: loggedUser.tiedMatches + 1
-                };
-                resultMessage = resultMessages.tied;
-            }
-            else {
-                requestData = {
-                    lostMatches: loggedUser.lostMatches + 1
-                };
-                resultMessage = resultMessages.lost;
-            }
-            await api.patch(`/users/${loggedUser._id}`, requestData);
-            setGameResultMessage(resultMessage);
-            setResultContainerOpened(true);
-        }
-        
-    }
-    
-    function checkWinningSequence(symbol) {
-        for(let i in winningSequences) {
-            if (gameState.board[winningSequences[i][0]] === symbol &&
-                gameState.board[winningSequences[i][1]] === symbol &&
-                gameState.board[winningSequences[i][2]] === symbol) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    async function startPlay(opponentUser) {
-        const defaultState = {
-            board,
-            currentSymbol: 0,
-            players: [opponentUser._id, loggedUser._id],
-            matchState: {
-                end: false,
-                result: ''
-            }
-        };
-        setGameState(defaultState);
-        setShowPlayers(true);
-        setOpponentInfo(opponentUser);
-        socket.emit('startPlay', defaultState);
-        socket.on('makePlay', handleMakePlay);
-    }
-    
-    async function handlePlay(index) {
-        if (gameState.players[gameState.currentSymbol] !== loggedUser._id) {
-            return;
-        }
-        if (gameState.board[index] !== '') {
-            return;
-        }
-        gameState.board[index] = symbols[gameState.currentSymbol];
-        if (checkWinningSequence(symbols[gameState.currentSymbol])) {
-            gameState.matchState = {
-                end: true,
-                result: symbols[gameState.currentSymbol]
-            }
-        }
-        if (gameState.board.indexOf('') === -1) {
-            gameState.matchState = {
-                end: true,
-                result: 'tied'
-            }
-        }
-        gameState.currentSymbol = gameState.currentSymbol === 0 ? 1 : 0;
-        socket.emit('makePlay', gameState);
-        
     }
     
     return (
@@ -205,29 +78,24 @@ export default function Home({ history }) {
                     <div></div>
                     <div></div>
                 </div>
-                <NotificationBox socket={socket} startPlay={startPlay}/>
+                <NotificationBox socket={socket} 
+                    startPlay={ opponent => ticTacToe.startPlay(opponent)}
+                />
             </header>
             <div id="page-content">
                 <UserMenu opened={menuOpened} user={loggedUser} searchBase={users}/>
-                <div className="game">
-                    {showPlayers && (<div className="game-players">
-                        <div 
-                        className={`player ${gameState.players[gameState.currentSymbol] === loggedUser._id ? 'player-turn' : '' }`}>
-                            <p>{loggedUser.username}</p>
-                        </div>
-                        <div 
-                        className={`player ${gameState.players[gameState.currentSymbol] === opponentInfo._id ? 'player-turn' : '' }`}>
-                            <p>{opponentInfo.username}</p>
-                        </div>
-                    </div>)}
-                    <TicTacToeBoard gameState={gameState} handlePlay={handlePlay}/>
-                </div>
+                <TicTacToe user={loggedUser} socket={socket} onRef={ref => setTicTacToe(ref)}
+                    onEndMatch={resultMessage => {
+                        setGameResultMessage(resultMessage);
+                        setResultContainerOpened(true);
+                    }}
+                />
             </div>
             {resultContainerOpened && (<div id="game-result-container">
                 <h1>{gameResultMessage}</h1>
                 <button onClick={() => { 
                     setResultContainerOpened(false);
-                    setShowPlayers(false);
+                    ticTacToe.resetGame();
                     getLoggedUser();
                 }}>FECHAR</button>
             </div>)}
