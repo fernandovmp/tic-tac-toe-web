@@ -6,6 +6,7 @@ import InviteIcon from '../assets/account-plus.svg'
 import NotificationIcon from '../assets/bell-outline.svg';
 import AcceptInvite from '../assets/email.svg';
 import io from 'socket.io-client';
+import UserMenu from '../components/UserMenu';
 
 const board = ['', '', '', '', '', '', '', '', ''];
 const symbols = ['X', 'O'];
@@ -90,8 +91,6 @@ export default function Home({ history }) {
     
     useEffect(() => { isAuthorized(); }, []);
     
-    useEffect(handleUserSearch, [searchUsername]);
-    
     useEffect(() => {
         const localSocket = io('http://localhost:3001', {
             query: {
@@ -126,24 +125,10 @@ export default function Home({ history }) {
         setMenuOpened(!menuOpened);
     }
     
-    function handleUserSearch() {
-        if(searchUsername.trim()  === '') {
-            setSearchResult([]);
-            return;
-        }
-        setSearchResult(users.filter(
-            user => user.username.includes(searchUsername.trim()) && user._id !== loggedUser._id));
-    }
-    
     useEffect(() => {
         if(!resultContainerOpened)
             setGameState(defaultGameState);
     }, [resultContainerOpened]);
-    
-    async function handleInvite(targetId) {
-        const response = await api.post(`/users/${targetId}/invites`);
-    }
-    
     
     async function handleCheckNotification() {
         setNotificationCount(0);
@@ -268,41 +253,7 @@ export default function Home({ history }) {
                 </div>
             </header>
             <div id="page-content">
-                <div className={`menu ${menuOpened ? '' : 'menu-hidden'}`}>
-                    <div className="user-statistics-container">
-                        <div className="user-statistics-username">
-                            <h2>{loggedUser.username}</h2>
-                        </div>
-                        <div className="user-statistics-content">
-                            <h1>{loggedUser.wonMatches}</h1>
-                            <p>Vitórias</p>
-                        </div>
-                        <div className="user-statistics-content">
-                            <h1>{loggedUser.tiedMatches}</h1>
-                            <p>Empates</p>
-                        </div>
-                        <div className="user-statistics-content">
-                            <h1>{loggedUser.lostMatches}</h1>
-                            <p>Derrotas</p>
-                        </div>
-                    </div>
-                    <input placeholder="Usuário" value={searchUsername} onChange={e => setSearchUsername(e.target.value)} />
-                    <div className="search-result-container">
-                        {searchResult.length > 0 ?
-                            (<ul>
-                                {searchResult.map(result => (
-                                    <li key={result._id} className="search-result-item">
-                                        <p>{result.username}</p>
-                                        <img src={InviteIcon} alt="Convidar" onClick={() => {
-                                            handleInvite(result._id);
-                                        }} />
-                                    </li>
-                                ))}
-                            </ul>)
-                            : null}
-                    </div>
-
-                </div>
+                <UserMenu opened={menuOpened} user={loggedUser} searchBase={users}/>
                 <div className="game">
                     {showPlayers && (<div className="game-players">
                         <div 
