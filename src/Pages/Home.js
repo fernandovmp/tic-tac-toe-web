@@ -29,6 +29,12 @@ const defaultGameState = {
     }
 }
 
+const resultMessages = {
+    won: 'Você ganhou!',
+    tied: 'Empate',
+    lost: 'Você perdeu!'
+}
+
 export default function Home({ history }) {
     
     const [loggedUser, setLoggedUser] = useState({});
@@ -41,6 +47,8 @@ export default function Home({ history }) {
     const [notificationCount, setNotificationCount] = useState(0);
     const [socket, setSocket] = useState(null);
     const [gameState, setGameState] = useState(defaultGameState);
+    const [resultContainerOpened, setResultContainerOpened] = useState(false);
+    const [gameResultMessage, setGameResultMessage] = useState('');
     
     async function getLoggedUser() {
         try {
@@ -118,6 +126,11 @@ export default function Home({ history }) {
             user => user.username.includes(searchUsername.trim()) && user._id !== loggedUser._id));
     }
     
+    useEffect(() => {
+        if(!resultContainerOpened)
+            setGameState(defaultGameState);
+    }, [resultContainerOpened]);
+    
     async function handleInvite(targetId) {
         const response = await api.post(`/users/${targetId}/invites`);
     }
@@ -134,25 +147,30 @@ export default function Home({ history }) {
     
     async function handleMakePlay(newState) {
         setGameState(newState);
+        let resultMessage = '';
         if (newState.matchState.end) {
             let requestData = {};
             if (newState.matchState.result === loggedUser._id) {
                 requestData = {
                     wonMatches: loggedUser.wonMatches + 1
                 };
+                resultMessage = resultMessages.won;
             }
             else if (newState.matchState.result === 'tied') {
                 requestData = {
                     tiedMatches: loggedUser.tiedMatches + 1
                 };
+                resultMessage = resultMessages.tied;
             }
             else {
                 requestData = {
                     lostMatches: loggedUser.lostMatches + 1
                 };
+                resultMessage = resultMessages.lost;
             }
             await api.patch(`/users/${loggedUser._id}`, requestData);
-            setGameState(defaultGameState);
+            setGameResultMessage(resultMessage);
+            setResultContainerOpened(true);
         }
         
     }
@@ -305,7 +323,13 @@ export default function Home({ history }) {
                     </div>
                 </div>
             </div>
-            
+            {resultContainerOpened && (<div id="game-result-container">
+                <h1>{gameResultMessage}</h1>
+                <button onClick={() => { 
+                    setResultContainerOpened(false);
+                    getLoggedUser();
+                }}>FECHAR</button>
+            </div>)}
         </div>
     );
 };
