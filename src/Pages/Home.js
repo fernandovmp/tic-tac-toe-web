@@ -6,6 +6,7 @@ import io from 'socket.io-client';
 import UserMenu from '../components/UserMenu';
 import NotificationBox from '../components/NotificationBox';
 import TicTacToe from '../components/tic-tac-toe/TicTacToe';
+import MatchResult from '../components/tic-tac-toe/MatchResult';
 
 export default function Home({ history }) {
     
@@ -17,6 +18,7 @@ export default function Home({ history }) {
     const [resultContainerOpened, setResultContainerOpened] = useState(false);
     const [gameResultMessage, setGameResultMessage] = useState('');
     const [ticTacToe, setTicTacToe] = useState(null);
+    const [matchResult, setMatchResult] = useState(null);
     
     async function getLoggedUser() {
         try {
@@ -76,19 +78,16 @@ export default function Home({ history }) {
                 <UserMenu opened={menuOpened} user={loggedUser} searchBase={users}/>
                 <TicTacToe user={loggedUser} socket={socket} onRef={ref => setTicTacToe(ref)}
                     onEndMatch={resultMessage => {
-                        setGameResultMessage(resultMessage);
-                        setResultContainerOpened(true);
+                        matchResult.showResult(resultMessage);
                     }}
                 />
             </div>
-            {resultContainerOpened && (<div id="game-result-container">
-                <h1>{gameResultMessage}</h1>
-                <button onClick={() => { 
-                    setResultContainerOpened(false);
-                    ticTacToe.resetGame();
-                    getLoggedUser();
-                }}>FECHAR</button>
-            </div>)}
+            <MatchResult onRef={ref => setMatchResult(ref)}
+                onClose={() => {
+                   ticTacToe.resetGame();
+                   getLoggedUser(); 
+                }}
+            />
         </div>
     );
 };
