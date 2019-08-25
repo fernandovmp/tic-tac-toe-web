@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import './Login.css';
 import api from '../services/api';
 import Cookies from 'universal-cookie';
 
-export default function Login({ history }) {
+const cookies = new Cookies();
+class Login extends Component {
     
-    const cookies = new Cookies();
-    const [createAccount, setCreateAccount] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    constructor(props) {
+        super(props);
+        this.state = {
+            createAccount: false,
+            username: '',
+            password: '',
+            confirmPassword: ''
+        }
+    }
     
-    async function handleLogin(e) {
+    handleLogin = async (e) => {
         e.preventDefault();
+        const { createAccount, username, password, confirmPassword } = this.state;
         try {
             if (createAccount) {
 
@@ -23,7 +29,7 @@ export default function Login({ history }) {
                     username,
                     password
                 });
-                if(userAlreadyExists) {
+                if (userAlreadyExists) {
                     throw new Error('user already exists');
                 }
             }
@@ -31,42 +37,46 @@ export default function Login({ history }) {
                 username,
                 password
             });
-            if(response.status === 401) {
+            if (response.status === 401) {
                 throw new Error('bad credentials');
             }
             cookies.set('access-token', response.headers['set-cookie'], {
                 secure: true,
             });
-            history.push('/');
+            this.props.history.push('/');
         } catch (error) {
-            
+
         }
-        
+
     }
     
-    return (
-        <div className="login-container">
-            <form onSubmit={handleLogin}>    
-                <input placeholder="Nome de usuario"
-                    value={username}
-                    onChange={e => setUsername(e.target.value)}
-                />
-                <input placeholder="Senha" type="password" 
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                />
-                {createAccount && (
-                    <input placeholder="Confirmar senha" type="password" 
-                        value={confirmPassword}
-                        onChange={e => setConfirmPassword(e.target.value)}
+    render() {
+        return (
+            <div className="login-container">
+                <form onSubmit={this.handleLogin}>
+                    <input placeholder="Nome de usuario"
+                        value={this.state.username}
+                        onChange={e => this.setState({ username: e.target.value })}
                     />
-                )
-                }
-                <button type="submit">Entrar</button>
-                <p onClick={() => {
-                    setCreateAccount(!createAccount);
-                }}>{createAccount ? 'Tenho uma conta' : 'Não tem uma conta?'}</p >
-            </form>
-        </div>
-    );
-};
+                    <input placeholder="Senha" type="password"
+                        value={this.state.password}
+                        onChange={e => this.setState({ password: e.target.value })}
+                    />
+                    {this.state.createAccount && (
+                        <input placeholder="Confirmar senha" type="password"
+                            value={this.state.confirmPassword}
+                            onChange={e => this.setState({ confirmPassword: e.target.value })}
+                        />
+                    )
+                    }
+                    <button type="submit">Entrar</button>
+                    <p onClick={() => {
+                        this.setState({ createAccount: !this.state.createAccount });
+                    }}>{this.state.createAccount ? 'Tenho uma conta' : 'Não tem uma conta?'}</p >
+                </form>
+            </div>
+        );
+    }
+}
+
+export default Login;
