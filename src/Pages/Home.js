@@ -49,6 +49,8 @@ export default function Home({ history }) {
     const [gameState, setGameState] = useState(defaultGameState);
     const [resultContainerOpened, setResultContainerOpened] = useState(false);
     const [gameResultMessage, setGameResultMessage] = useState('');
+    const [showPlayers, setShowPlayers] = useState(false);
+    const [opponentInfo, setOpponentInfo] = useState({});
     
     async function getLoggedUser() {
         try {
@@ -99,6 +101,13 @@ export default function Home({ history }) {
         localSocket.on('invite', () => GetInvites());
         localSocket.on('startPlay', startState => {
             setGameState(startState);
+            setShowPlayers(true);
+            async function getOpponent (opponentId) {
+                const response = await api.get(`/users/${opponentId}`);
+                setOpponentInfo(response.data);
+                console.log(response.data + '\n' + startState.players);
+            }
+            getOpponent(startState.players[1]);
             localSocket.on('makePlay', handleMakePlay);
         });
         setSocket(localSocket);
@@ -190,13 +199,15 @@ export default function Home({ history }) {
         const defaultState = {
             board,
             currentSymbol: 0,
-            players: [opponentUser, loggedUser._id],
+            players: [opponentUser._id, loggedUser._id],
             matchState: {
                 end: false,
                 result: ''
             }
         };
         setGameState(defaultState);
+        setShowPlayers(true);
+        setOpponentInfo(opponentUser);
         socket.emit('startPlay', defaultState);
         socket.on('makePlay', handleMakePlay);
     }
@@ -247,7 +258,7 @@ export default function Home({ history }) {
                                 <strong className="invite-header">Você recebeu um convite!</strong>
                                 <div>
                                     <p>{invite.sender.username} convidou você para uma partida!</p>
-                                    <button onClick={() => startPlay(invite.sender._id)}>
+                                    <button onClick={() => startPlay(invite.sender)}>
                                         <img src={AcceptInvite} alt="Aceitar convite"/>
                                     </button>
                                 </div>
@@ -293,6 +304,16 @@ export default function Home({ history }) {
 
                 </div>
                 <div className="game">
+                    {showPlayers && (<div className="game-players">
+                        <div 
+                        className={`player ${gameState.players[gameState.currentSymbol] === loggedUser._id ? 'player-turn' : '' }`}>
+                            <p>{loggedUser.username}</p>
+                        </div>
+                        <div 
+                        className={`player ${gameState.players[gameState.currentSymbol] === opponentInfo._id ? 'player-turn' : '' }`}>
+                            <p>{opponentInfo.username}</p>
+                        </div>
+                    </div>)}
                     <div className="board">
                         <div className="board-cell" onClick={() => handlePlay(0) }>
                             <div>{gameState.board[0]}</div>
@@ -330,6 +351,7 @@ export default function Home({ history }) {
                 <h1>{gameResultMessage}</h1>
                 <button onClick={() => { 
                     setResultContainerOpened(false);
+                    setShowPlayers(false);
                     getLoggedUser();
                 }}>FECHAR</button>
             </div>)}
