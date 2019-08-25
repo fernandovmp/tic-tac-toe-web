@@ -259,6 +259,9 @@ export default function Home({ history }) {
             <div id="page-content">
                 <div className={`menu ${menuOpened ? '' : 'menu-hidden'}`}>
                     <div className="user-statistics-container">
+                        <div className="user-statistics-username">
+                            <h2>{loggedUser.username}</h2>
+                        </div>
                         <div className="user-statistics-content">
                             <h1>{loggedUser.wonMatches}</h1>
                             <p>Vitórias</p>
