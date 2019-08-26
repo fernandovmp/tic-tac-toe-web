@@ -80,7 +80,7 @@ class Home extends Component {
                         <div></div>
                     </div>
                     <NotificationBox socket={this.state.socket}
-                        startPlay={opponent => this.state.ticTacToe.startPlay(opponent)}
+                        startPlay={invite => this.state.ticTacToe.startPlay(invite.sender, invite._id)}
                     />
                 </header>
                 <div id="page-content">

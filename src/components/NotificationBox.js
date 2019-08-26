@@ -67,7 +67,7 @@ class NotificationBox extends Component {
                             <strong className="invite-header">Você recebeu um convite!</strong>
                             <div>
                                 <p>{invite.sender.username} convidou você para uma partida!</p>
-                                <button onClick={() => this.props.startPlay(invite.sender)}>
+                                <button onClick={() => this.props.startPlay(invite)}>
                                     <img src={AcceptInvite} alt="Aceitar convite" />
                                 </button>
                             </div>

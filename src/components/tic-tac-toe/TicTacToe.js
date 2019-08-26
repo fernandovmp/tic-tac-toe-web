@@ -23,7 +23,8 @@ const defaultGameState = {
     matchState: {
         end: false,
         result: ''
-    }
+    },
+    invite: null
 }
 const resultMessages = {
     won: 'Você ganhou!',
@@ -80,7 +81,7 @@ class TicTacToe extends Component {
         this.setState({ opponent: response.data });
     }
     
-    startPlay = async opponentUser => {
+    startPlay = async (opponentUser, inviteId) => {
         const defaultState = {
             board,
             currentSymbol: 0,
@@ -88,7 +89,8 @@ class TicTacToe extends Component {
             matchState: {
                 end: false,
                 result: ''
-            }
+            },
+            invite: inviteId
         };
         this.setState({ gameState: defaultState });
         this.setState({ showPlayers: true });
