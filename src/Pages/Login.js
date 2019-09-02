@@ -12,7 +12,9 @@ class Login extends Component {
             createAccount: false,
             username: '',
             password: '',
-            confirmPassword: ''
+            confirmPassword: '',
+            errorMessage: '',
+            showErrorMessage: false
         }
     }
     
@@ -25,11 +27,11 @@ class Login extends Component {
                 if (password !== confirmPassword) {
                     throw new Error('passwords doesn\'t match');
                 }
-                const { userAlreadyExists } = await api.post('/users', {
+                const response = await api.post('/users', {
                     username,
                     password
                 });
-                if (userAlreadyExists) {
+                if (response.data.userAlreadyExists) {
                     throw new Error('user already exists');
                 }
             }
@@ -37,15 +39,22 @@ class Login extends Component {
                 username,
                 password
             });
-            if (response.status === 401) {
-                throw new Error('bad credentials');
-            }
             cookies.set('access-token', response.headers['set-cookie'], {
                 secure: true,
             });
             this.props.history.push('/');
         } catch (error) {
-
+            let message;
+            if (error.message === 'Request failed with status code 401') {
+                message = 'Senha e/ou usuário inválido';
+            }
+            else if (error.message === 'passwords doesn\'t match') {
+                message = 'As senhas informadas precisão ser iguais';
+            }
+            else if (error.message === 'user already exists') {
+                message = 'Usuário já foi cadastrado';
+            }
+            this.setState({errorMessage: message, showErrorMessage: true})
         }
 
     }
@@ -54,6 +63,9 @@ class Login extends Component {
         return (
             <div className="login-container">
                 <form onSubmit={this.handleLogin}>
+                    { this.state.showErrorMessage && (
+                    <p id="error-message">{this.state.errorMessage}</p>
+                    ) }
                     <input placeholder="Nome de usuario"
                         value={this.state.username}
                         onChange={e => this.setState({ username: e.target.value })}
