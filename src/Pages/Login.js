@@ -82,7 +82,7 @@ class Login extends Component {
                     )
                     }
                     <button type="submit">Entrar</button>
-                    <p onClick={() => {
+                    <p id="login-toggle" onClick={() => {
                         this.setState({ createAccount: !this.state.createAccount });
                     }}>{this.state.createAccount ? 'Tenho uma conta' : 'Não tem uma conta?'}</p >
                 </form>
